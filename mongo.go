@@ -61,14 +61,15 @@ func (db *Mongodb) CreateDocument(ctx context.Context, collectionName string, do
 	return response.InsertedID.(primitive.ObjectID), nil
 }
 
-func (db *Mongodb) GetDocument(ctx context.Context, collectionName string, filter primitive.E) (bson.D, error) {
+func (db *Mongodb) GetDocument(ctx context.Context, collectionName string, filter primitive.E) (*mongo.SingleResult, error) {
 
 	log.Println("chives: getting object id")
 
 	collection := db.Client.Database(db.Database).Collection(collectionName)
 
 	var result bson.D
-	err := collection.FindOne(ctx, bson.D{filter}).Decode(&result)
+	singleresult := collection.FindOne(ctx, bson.D{filter})
+	err := singleresult.Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("custom error: email or password incorrect")
@@ -76,6 +77,6 @@ func (db *Mongodb) GetDocument(ctx context.Context, collectionName string, filte
 		return nil, err
 	}
 
-	log.Println("chives: object id recovered")
-	return result, nil
+	log.Println("chives: object recovered")
+	return singleresult, nil
 }
