@@ -67,14 +67,9 @@ func (db *Mongodb) GetDocument(ctx context.Context, collectionName string, filte
 
 	collection := db.Client.Database(db.Database).Collection(collectionName)
 
-	var result bson.D
 	singleresult := collection.FindOne(ctx, bson.D{filter})
-	err := singleresult.Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("custom error: email or password incorrect")
-		}
-		return nil, err
+	if singleresult == nil {
+		return nil, errors.New("chives: no document found")
 	}
 
 	log.Println("chives: object recovered")
