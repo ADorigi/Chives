@@ -68,8 +68,8 @@ func (db *Mongodb) GetDocument(ctx context.Context, collectionName string, filte
 	collection := db.Client.Database(db.Database).Collection(collectionName)
 
 	singleresult := collection.FindOne(ctx, bson.D{filter})
-	if singleresult == nil {
-		log.Println("chives: no document found")
+	if singleresult.Err() != nil {
+		log.Printf("chives: %s", singleresult.Err())
 		return nil, errors.New("chives: no document found")
 	}
 
