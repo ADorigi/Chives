@@ -2,7 +2,6 @@ package chives
 
 import (
 	"context"
-	"errors"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,33 +45,5 @@ func (db *Mongodb) Connect(ctx context.Context) {
 	log.Println("chives: mongodb database connected")
 }
 
-func (db *Mongodb) CreateDocument(ctx context.Context, collectionName string, document bson.D) (primitive.ObjectID, error) {
-
-	log.Println("chives: creating document")
-	collection := db.Client.Database(db.Database).Collection(collectionName)
-
-	response, err := collection.InsertOne(ctx, document)
-	if err != nil {
-		log.Println("Cannot insert document")
-		return primitive.NilObjectID, err
-	}
-
-	log.Println("chives: document created")
-	return response.InsertedID.(primitive.ObjectID), nil
-}
-
-func (db *Mongodb) GetDocument(ctx context.Context, collectionName string, filter primitive.E) (*mongo.SingleResult, error) {
-
-	log.Println("chives: getting object id")
-
-	collection := db.Client.Database(db.Database).Collection(collectionName)
-
-	singleresult := collection.FindOne(ctx, bson.D{filter})
-	if singleresult.Err() != nil {
-		log.Printf("chives: %s", singleresult.Err())
-		return nil, errors.New("chives: no document found")
-	}
-
-	log.Println("chives: object recovered")
-	return singleresult, nil
-}
+// everything after this step
+// needs to be done in the local library
